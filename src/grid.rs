@@ -265,3 +265,73 @@ impl<T: PossibleValues, const D: usize> Grid<T, D> {
         Ok(())
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    impl PossibleValues for usize {
+        fn get_possible_values() -> Vec<(Self, f32)> {
+            vec![(0, 1.0), (1, 1.0), (2, 1.0)]
+        }
+    }
+
+    #[test]
+    fn test_new() {
+        let size = [3, 3];
+        let grid = Grid::<usize, 2>::new(size);
+        assert!(grid.is_ok());
+
+        let size = [0, 1, 2, 3];
+        let grid = Grid::<usize, 4>::new(size);
+        assert!(grid.is_err());
+    }
+
+    #[test]
+    fn test_size() {
+        let size = [3, 3];
+        let grid = Grid::<usize, 2>::new(size).unwrap();
+        assert_eq!(grid.size(), size);
+    }
+
+    #[test]
+    fn test_get_item() {
+        let size = [3, 3];
+        let mut grid = Grid::<usize, 2>::new(size).unwrap();
+        let pixel = Pixel::new(1);
+        grid.set_item([1, 1], pixel.clone());
+        assert_eq!(grid.get_item([1, 1]), pixel);
+    }
+
+    #[test]
+    fn test_set_item() {
+        let size = [3, 3];
+        let mut grid = Grid::<usize, 2>::new(size).unwrap();
+        let pixel = Pixel::new(1);
+        grid.set_item([1, 1], pixel.clone());
+        assert_eq!(grid.get_item([1, 1]), pixel);
+    }
+
+    #[test]
+    fn test_unidirectional_neighbors() {
+        let size = [3, 3];
+        let grid = Grid::<usize, 2>::new(size).unwrap();
+        let neighbors = grid.unidirectional_neighbors([1, 1]);
+        // top, bottom, left, right
+        assert_eq!(neighbors.len(), 4);
+    }
+
+    #[test]
+    fn test_neighbors() {
+        let size = [3, 3];
+        let grid = Grid::<usize, 2>::new(size).unwrap();
+        let neighbors = grid.neighbors([1, 1], 1);
+        assert_eq!(neighbors.len(), 8);
+
+        let size = [3, 3, 3];
+        let grid = Grid::<usize, 3>::new(size).unwrap();
+        let neighbors = grid.neighbors([1, 1, 1], 1);
+        // 26 neighbors, 8 of which are the same as the 2D case
+        assert_eq!(neighbors.len(), 26);
+    }
+}

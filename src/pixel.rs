@@ -18,7 +18,7 @@ pub trait PossibleValues: Sized + Clone + Eq {
 }
 
 /// This struct represents a n-dimensional "pixel".
-#[derive(Clone)]
+#[derive(Clone, PartialEq, Debug)]
 pub struct Pixel<T: Clone> {
     pub(crate) possible_values: Vec<(T, f32)>,
     pub determined_value: Option<T>,
